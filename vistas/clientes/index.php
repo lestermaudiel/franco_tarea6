@@ -14,7 +14,7 @@
                 <div class="row mb-3">
                     <div class="col">
                         <label for="cliente_nit">Nit del Cliente</label>
-                        <input type="text" step="0.01" min="0" name="cliente_nit" id="cliente_nit" class="form-control">
+                        <input type="text" name="cliente_nit" id="cliente_nit" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -51,7 +51,9 @@
                 </table>
             </div>
         </div>
-    </div>
-    <script src="../../src/js/funciones.js"></script>
-    <script src="../../src/js/clientes/index.js"></script>
+    </form>
+</div>
+<script src="../../src/js/funciones.js"></script>
+<script src="../../src/js/clientes/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 <?php include_once '../../includes/footer.php'?>
