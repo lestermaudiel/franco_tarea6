@@ -1,25 +1,23 @@
+const formulario = document.querySelector('form')
+const btnBuscar = document.getElementById('btnBuscar');
+const btnModificar = document.getElementById('btnModificar');
+const btnGuardar = document.getElementById('btnGuardar');
+const btnCancelar = document.getElementById('btnCancelar');
+const divTabla = document.getElementById('divTabla');
 
-const formularioClientes = document.querySelector('form');
-const btnBuscarCliente = document.getElementById('btnBuscarCliente');
-const btnModificarCliente = document.getElementById('btnModificarCliente');
-const btnGuardarCliente = document.getElementById('btnGuardarCliente');
-const btnCancelarAccion = document.getElementById('btnCancelarAccion');
-const divTablaClientes = document.getElementById('divTablaClientes');
-const tablaClientes = document.getElementById('tablaClientes');
+btnModificar.disabled = true
+btnModificar.parentElement.style.display = 'none'
+btnCancelar.disabled = true
+btnCancelar.parentElement.style.display = 'none'
 
-btnModificarCliente.disabled = true;
-btnModificarCliente.parentElement.style.display = 'none';
-btnCancelarAccion.disabled = true;
-btnCancelarAccion.parentElement.style.display = 'none';
-
-const guardarCliente = async (evento) => {
+const guardar = async (evento) => {
   evento.preventDefault();
-  if (!validarFormulario(formularioClientes, ['cliente_id'])) {
+  if (!validarFormulario(formulario, ['cliente_id'])) {
     Swal.fire('Error', 'Debe llenar todos los campos', 'error');
     return;
   }
 
-  const body = new FormData(formularioClientes);
+  const body = new FormData(formulario);
   body.append('tipo', 1);
   body.delete('cliente_id');
   const url = '/franco_tarea6/controladores/clientes/index.php';
@@ -29,6 +27,7 @@ const guardarCliente = async (evento) => {
   };
 
   try {
+
     const respuesta = await fetch(url, config);
     const data = await respuesta.json();
     console.log(data);
@@ -37,8 +36,8 @@ const guardarCliente = async (evento) => {
 
     switch (codigo) {
       case 1:
-        formularioClientes.reset();
-        buscarClientes();
+        formulario.reset();
+        buscar();
 
         Swal.fire('Guardado', mensaje, 'success');
         break;
@@ -58,117 +57,120 @@ const guardarCliente = async (evento) => {
   }
 };
 
-const buscarClientes = async () => {
-  let cliente_nombre = formularioClientes.cliente_nombre.value;
-  let cliente_nit = formularioClientes.cliente_nit.value;
+const buscar = async () => {
+
+  let cliente_nombre = formulario.cliente_nombre.value;
+  let cliente_nit = formulario.cliente_nit.value;
   const url = `/franco_tarea6/controladores/clientes/index.php?cliente_nombre=${cliente_nombre}&cliente_nit=${cliente_nit}`;
   const config = {
     method: 'GET'
-  };
+  }
 
   try {
-    const respuesta = await fetch(url, config);
+    const respuesta = await fetch(url, config)
     const data = await respuesta.json();
 
-    tablaClientes.tBodies[0].innerHTML = '';
+    tablaProductos.tBodies[0].innerHTML = ''
     const fragment = document.createDocumentFragment();
+    console.log(data);
 
     if (data.length > 0) {
       let contador = 1;
       data.forEach(cliente => {
         const tr = document.createElement('tr');
-        const td1 = document.createElement('td');
-        const td2 = document.createElement('td');
-        const td3 = document.createElement('td');
-        const td4 = document.createElement('td');
-        const td5 = document.createElement('td');
-        const buttonModificar = document.createElement('button');
-        const buttonEliminar = document.createElement('button');
+        const td1 = document.createElement('td')
+        const td2 = document.createElement('td')
+        const td3 = document.createElement('td')
+        const td4 = document.createElement('td')
+        const td5 = document.createElement('td')
+        const buttonModificar = document.createElement('button')
+        const buttonEliminar = document.createElement('button')
 
-        buttonModificar.classList.add('btn', 'btn-warning');
-        buttonEliminar.classList.add('btn', 'btn-danger');
-        buttonModificar.textContent = 'Modificar';
-        buttonEliminar.textContent = 'Eliminar';
+        
+        buttonModificar.classList.add('btn', 'btn-warning')
+        buttonEliminar.classList.add('btn', 'btn-danger')
+        buttonModificar.textContent = 'Modificar'
+        buttonEliminar.textContent = 'Eliminar'
 
-        buttonModificar.addEventListener('click', () => colocarDatosCliente(cliente));
-        buttonEliminar.addEventListener('click', () => eliminarCliente(cliente.CLIENTE_ID));
+        buttonModificar.addEventListener('click', () => colocarDatos(cliente))
+        buttonEliminar.addEventListener('click', () => eliminar(cliente.CLIENTE_ID))
 
         td1.innerText = contador;
-        td2.innerText = cliente.CLIENTE_NOMBRE;
-        td3.innerText = cliente.CLIENTE_NIT;
+        td2.innerText = cliente.CLIENTE_NOMBRE
+        td3.innerText = cliente.CLIENTE_NIT
 
-        td4.appendChild(buttonModificar);
-        td5.appendChild(buttonEliminar);
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        tr.appendChild(td4);
-        tr.appendChild(td5);
+        td4.appendChild(buttonModificar)
+        td5.appendChild(buttonEliminar)
+        tr.appendChild(td1)
+        tr.appendChild(td2)
+        tr.appendChild(td3)
+        tr.appendChild(td4)
+        tr.appendChild(td5)
 
         fragment.appendChild(tr);
 
         contador++;
-      });
+      })
     } else {
       const tr = document.createElement('tr');
-      const td = document.createElement('td');
-      td.innerText = 'No existen registros';
-      td.colSpan = 5;
-      tr.appendChild(td);
+      const td = document.createElement('td')
+      td.innerText = 'No existen registros'
+      td.colSpan = 5
+      tr.appendChild(td)
       fragment.appendChild(tr);
     }
 
-    tablaClientes.tBodies[0].appendChild(fragment);
+    tablaProductos.tBodies[0].appendChild(fragment)
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-const colocarDatosCliente = (datos) => {
-  formularioClientes.cliente_nombre.value = datos.CLIENTE_NOMBRE;
-  formularioClientes.cliente_nit.value = datos.CLIENTE_NIT;
-  formularioClientes.cliente_id.value = datos.CLIENTE_ID;
+const colocarDatos = (datos) => {
+  console.log(datos)
+  formulario.cliente_nombre.value = datos.CLIENTE_NOMBRE
+  formulario.cliente_nit.value = datos.CLIENTE_NIT
+  formulario.cliente_id.value = datos.CLIENTE_ID
 
-  btnGuardarCliente.disabled = true;
-  btnGuardarCliente.parentElement.style.display = 'none';
-  btnBuscarCliente.disabled = true;
-  btnBuscarCliente.parentElement.style.display = 'none';
-  btnModificarCliente.disabled = false;
-  btnModificarCliente.parentElement.style.display = '';
-  btnCancelarAccion.disabled = false;
-  btnCancelarAccion.parentElement.style.display = '';
-  divTablaClientes.style.display = 'none';
-};
+  btnGuardar.disabled = true
+  btnGuardar.parentElement.style.display = 'none'
+  btnBuscar.disabled = true
+  btnBuscar.parentElement.style.display = 'none'
+  btnModificar.disabled = false
+  btnModificar.parentElement.style.display = ''
+  btnCancelar.disabled = false
+  btnCancelar.parentElement.style.display = ''
+  divTabla.style.display = 'none'
+}
 
 const cancelarAccion = () => {
-  formularioClientes.reset();
-  btnGuardarCliente.disabled = false;
-  btnGuardarCliente.parentElement.style.display = '';
-  btnBuscarCliente.disabled = false;
-  btnBuscarCliente.parentElement.style.display = '';
-  btnModificarCliente.disabled = true;
-  btnModificarCliente.parentElement.style.display = 'none';
-  btnCancelarAccion.disabled = true;
-  btnCancelarAccion.parentElement.style.display = 'none';
-  divTablaClientes.style.display = '';
-};
+  btnGuardar.disabled = false
+  btnGuardar.parentElement.style.display = ''
+  btnBuscar.disabled = false
+  btnBuscar.parentElement.style.display = ''
+  btnModificar.disabled = true
+  btnModificar.parentElement.style.display = 'none'
+  btnCancelar.disabled = true
+  btnCancelar.parentElement.style.display = 'none'
+  divTabla.style.display = ''
+}
 
-const modificarCliente = async () => {
-  const cliente_id = formularioClientes.cliente_id.value;
+const modificar = async () => {
+  const cliente_id = formulario.cliente_id.value;
 
   if (!cliente_id) {
     Swal.fire('Error', 'No se ha seleccionado ningún cliente para modificar.', 'error');
     return;
   }
 
-  if (!validarFormulario(formularioClientes, ['cliente_nombre'])) {
+  if (!validarFormulario(formulario, ['cliente_nombre'])) {
     Swal.fire('Error', 'Debe llenar todos los campos.', 'error');
     return;
   }
 
-  const body = new FormData(formularioClientes);
+  const body = new FormData(formulario);
   body.append('tipo', 2);
-  body.append('cliente_id', cliente_id);
+  body.append('cliente_id', cliente_id)
 
   const url = '/franco_tarea6/controladores/clientes/index.php';
   const config = {
@@ -185,9 +187,9 @@ const modificarCliente = async () => {
 
     switch (codigo) {
       case 1:
-        formularioClientes.reset();
+        formulario.reset();
         cancelarAccion();
-        buscarClientes();
+        buscar();
 
         Swal.fire('Actualizado', mensaje, 'success');
         break;
@@ -204,7 +206,8 @@ const modificarCliente = async () => {
   }
 };
 
-const eliminarCliente = async (id) => {
+const eliminar = async (id) => {
+
   const result = await Swal.fire({
     title: '¿Desea eliminar este cliente?',
     icon: 'warning',
@@ -232,12 +235,14 @@ const eliminarCliente = async (id) => {
 
       switch (codigo) {
         case 1:
-          buscarClientes();
+          buscar();
+
 
           Swal.fire('Eliminado', mensaje, 'success');
           break;
 
         case 0:
+
           Swal.fire('Error', mensaje, 'error');
           break;
 
@@ -250,7 +255,9 @@ const eliminarCliente = async (id) => {
   }
 };
 
-formularioClientes.addEventListener('submit', guardarCliente);
-btnBuscarCliente.addEventListener('click', buscarClientes);
-btnModificarCliente.addEventListener('click', modificarCliente);
-btnCancelarAccion.addEventListener('click', cancelarAccion);
+buscar();
+
+formulario.addEventListener('submit', guardar);
+btnBuscar.addEventListener('click', buscar);
+btnModificar.addEventListener('click', modificar);
+btnCancelar.addEventListener('click', cancelarAccion)
