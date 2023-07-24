@@ -4,7 +4,7 @@
         <h1 class="text-center">Formulario de Clientes</h1>
         <div class="row justify-content-center mb-5">
             <form class="col-lg-8 border bg-light p-3">
-                <input type="text" name="producto_id" id="producto_id">
+                <input type="hidden" name="cliente_id" id="cliente_id">
                 <div class="row mb-3">
                     <div class="col">
                         <label for="cliente_nombre">Nombre del cliente</label>
